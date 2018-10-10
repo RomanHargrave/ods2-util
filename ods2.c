@@ -1109,6 +1109,7 @@ int main(int argc,char *argv[])
 {
     char str[2048];
     char *command_line = NULL;
+    char *readstat = NULL;
     FILE *atfile = NULL;
     char *p;
     printf(" ODS2 %s\n", MODULE_IDENT);
@@ -1161,7 +1162,9 @@ int main(int argc,char *argv[])
 	    if (getcmd (str, "$> ") == NULL) break;
 #else
             printf("$> ");
-            if (gets(str) == NULL) break;
+            readstat = fgets(str,sizeof(str),stdin);
+            if(str[strlen(str)-1] == '\n') str[strlen(str)-1] = '\0';
+            if(readstat == NULL) break;
 #endif
         }
 }
