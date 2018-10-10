@@ -14,10 +14,14 @@
 	If the user mounts  cd0   we open up /dev/cd0 for access.
 */
 
+// probably not necessary in 2018
+#define _FILE_OFFSET_BITS 64
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/types.h>
 
 #include "phyio.h"
 #include "ssdef.h"
@@ -71,19 +75,19 @@ unsigned phyio_close(unsigned handle)
 
 unsigned phyio_read(unsigned handle,unsigned block,unsigned length,char *buffer)
 {
-    int res;
+    off_t res;
 #ifdef DEBUG
     printf("Phyio read block: %d into %x (%d bytes)\n",block,buffer,length);
 #endif
     read_count++;
     if ((res = lseek(handle,block*512,0)) < 0) {
         perror("lseek ");
-	printf("lseek failed %d\n",res);
+        printf("lseek failed %ld\n",res);
         return SS$_PARITY;
     }
     if ((res = read(handle,buffer,length)) != length) {
         perror("read ");
-	printf("read failed %d\n",res);
+        printf("read failed %ld\n",res);
         return SS$_PARITY;
     }
     return SS$_NORMAL;
